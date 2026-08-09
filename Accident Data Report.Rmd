@@ -1,0 +1,338 @@
+---
+title: 'Accident Data Report'
+author: "Rohit Ramamoorthy"
+date: "October 3, 2025"
+fontsize: 10pt
+geometry: margin=1.5cm
+output: 
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{float}
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhead[LO,LE]{}
+  - \usepackage{amsmath}
+  - \usepackage{fontspec}
+  - \setmainfont{Times New Roman}
+---
+
+# Executive Summary
+
+This report presents a model of how the fatality of an accident depends on other variables in the accident. A total of 3000 data records were available, which include information on whether the accident occurred during the first or second half of peak time traffic, the metropolitan area where the accident took place, whether a truck or bus was involved, the type of location where the accident occurred (traffic light, traffic sign or stop), the sex and age of the driver, whether the driver was speeding or had an alcohol level above the legal limit, the visibility, and the weather at that time, the distance from the accident site to the driver’s house, and whether the accident was fatal or not.
+
+Fatal is the response variable, which is represented as a binary variable. To create the generalized linear model with interactions, stepAIC was used. Crashes that occurred in the evening, involved a bus or alcohol, during rainy or wet weather, happened farther from the driver's home, and involved older drivers were associated with higher odds of being fatal.
+
+The interaction between PeakTime and Alcohol, and between PeakTime and  Age indicates that drivers who are older and drunk while driving in the evening, experience a smaller increase in fatality odds compared to driving drunk during the daytime. The interaction between the Bus and Age suggests that, as age increases, the additional fatality odds from a bus involvement decrease; bus crashes carry higher odds for younger drivers. The interaction terms between Alcohol, along with WeatherRaining and WeatherWet, indicate that while both alcohol and poor weather raise fatality odds, their combined effect is weaker than expected compared to driving in WeatherFine. The interaction terms of HomeDistance with Weather(Raining/Wet) indicates that the effect of distance from home is reduced in bad weather conditions, crashes farther from home raise fatality odds in WeatherRaining or WeatherWet than in WeatherFine.
+
+# 1 Introduction
+
+A fatality caused by a road accident is a very trying time for the individuals and their families involved in it and influenced by multiple factors in play, such as age, sex, vehicle type, time of day, etc. The attributes of the dataset used would also not remain consistent, as the data collected by the government would vary across countries. In González logit model, it uses similar variables as discussed in the executive summary. The paper explores the dataset through a base model and three models with different interaction terms which include the second model being an interaction between 00:00 AM - 5:59 AM with inattentive to traffic conditions, the third model being an interaction between driving under the influence of alcohol or a controlled substance and the sex male, and the fourth model being an interaction between driving under the influence of alcohol or a controlled substance and weekend.
+
+Model 1
+Prob(x) = xi$\beta$ + $\epsilon$i
+
+Model 2
+Prob(x) = xi$\beta$ + $\delta$ 00 : 00 − 5 : 59 * cause2 + $\epsilon$i
+
+Model 3
+Prob(x) = xi$\beta$ + $\theta$men*cause1 + $\epsilon$i
+
+Model 4
+Prob(x) = xi$\beta$ + $\phi$weekend*cause1 + $\epsilon$i
+
+These models were able to confirm that men are prone to fatalities in accidents, and when aged higher than 60 have a higher probability of fatality [1]. In the study performed by G.Zhang, a logistic model was used, but the attributes used were slightly more detailed and different. Such as the baseline sex was female, their occupation, the vehicle’s safety type, and the type and grade of the roads. Male drivers faced more fatalities in both traffic and non-traffic violation situations. This study also emphasised that rather than keeping the response variable as a binary variable, cases where multiple accidents caused multiple fatalities should use in-turn use an ordinal regression model instead [2].
+
+
+Yau's analysis followed a logistic regression model, but with additional attributes such as safety features used, such as seat belts for four-wheeler, helmets for motorcycles. It also had traffic factors such as the level of traffic congestion and the speed limit of the road. This model uses a significance level of 10% and concludes that different vehicle types would have different significant factors. The use of seat belts is emphasised for goods vehicles, but motorcycles have an increased chance of a fatality on weekends. This study concluded that the Chinese government could tailor policies for each vehicle type based on the significant factors
+for each vehicle type [3].
+
+
+Yeung used the chi-square test to find the number of road traffic accidents (RTAs) occurring across three tunnels in Singapore. The tunnels were split into three zones, Z1, Z2, and Z3, which were, namely, the first 250m outside the tunnel, the first 250m into the tunnel, and the interior of the tunnel. This study discovered that the multi-vehicle collision (MVC) rate was higher at the transition zones. The issue the data set proposed was that, as per the scheme, non-injury RTAs would not get reported [4].
+
+
+Lluís’s article on road safety in Barcelona, analysing the Local Road Safety Plan (LRSP) using binary logistic regression, was implemented using severity as the response variable with the factors being non-serious and fatal. A few changes to the LRSP were able to decrease the number of serious and fatal accidents and increase the number of non-serious accidents. The changes were centred on speed management, redesigning the infrastructure, along with engagement with educational campaigns as early as kindergarten. From the study, the conclusion inferred was that the new changes to the LRSP were effective in reducing the fatalities and the severity of the accidents [5].
+
+
+Shi’s analysis of the severity of accidents in Guangdong province uses a logistic regression model. The dataset used for the analysis included attributes such as the truck overloading status check, which would be a part of safety checks. It was found to be an important factor in decreasing the severity of the accidents. The model fell short as it was not very precise, as factors such as speeding, alcohol consumption, etc., were not considered while building the dataset [6].
+
+
+Baryab used the Fatality Analysis Reporting System (FARS) in the US for analyzing whether an accident was fatal or not while the driver was drinking and driving, utilizing the binary logistic regression model. The model considered various attributes along with historical violation, which was used to check whether a person with a past violation would be careful while driving and not evade the law. The conclusion from this analysis was that drivers with past violations have a 0.28% likelihood of not dying in an accident as to a driver with no past violations [7].
+
+
+The model equation is: 
+
+$$
+\begin{aligned}
+Deaths = \ & \beta_{0} 
++ \beta_{1}(\text{Drink and Drive}) 
++ \beta_{2}(\text{Age Group}) 
++ \beta_{3}(\text{Sex}) \\ 
+&+ \beta_{4}(\text{Distractions}) 
++ \beta_{5}(\text{Physical Disability}) 
++ \beta_{6}(\text{Historical Violations}) 
++ \mu
+\end{aligned}
+$$
+
+
+Asif used the data from Road Traffic Accidents (RTA) in Bangladesh to build a machine learning model with multiple machine learning algorithms, such as Logistic Regression, Random Forrest, Classifier, K Nearest Neighbour Classifier, Naive Bayes, Light Gradient Boosting, Extreme Gradient Boosting Classifier, and a Multi-Layer Perceptron were used to layer and capture non-linear relationships. From these models, the conclusion was that the Light Gradient Boosting is the best model in terms of precision, recall, mean cross-validation score, test accuracy, F1 score, and ROC-AUC [8].
+
+
+In the study conducted by J.Zhang, it compared multiple models such as, multinomial logit model, ordered probit, decision tree, K-Nearest Neighbour Classifier, Random Forest (RF), and Support Vector Machine. This study had a two-stage sensitivity analysis method for the models to capture the important relationships that it could infer from the dataset. The two best models in this study were concluded as Random Forest and K-Nearest Neighbour with a prediction accuracy of 53.9% and 52.9% respectively. The lower accuracy of the other models suggests the models are linear and were not able to capture the ordinal data of the response variable, which is the severity of the accident [9, 10].
+
+# 2 Methodology
+
+After importing the dataset, the ID column was removed. The levels in all the attributes other than HomeDistance, Age, and Fatal were fixed using gsub as the levels were not reflecting properly. Then all the attributes other than HomeDistance, Age and Fatal are converted to factors as they are categorical variables. HomeDistance, and Age are numerical values, and Fatal is the response variable for the models. Thereafter, a summary of the dataset was taken, and the graphs of Fatal vs every predictor variable were plotted.
+
+While solving this, the fatal attribute was fit alongside the simple model as well as an interaction model, too. Then, stepAIC from the MASS library was used to develop the interaction model. From the model received by this process, the predictor with the highest p-value was LocationOuterSuburban, but as this was a main effect, it cannot be removed unless the interaction is insignificant. LocationOuterSuburban:SexM was the insignificant interaction, so that term was removed from the model. Next LocationSuburban was the term with the highest p-value, and hence Location was dropped from the model as it did not have any interactions in the model that would prevent it from getting dropped.
+
+Further PeakTimepm:HomeDistance was the next term with the highest p-value, and was hence dropped from the model. AlcoholY:WeatherRaining, WeatherRaining, and WeatherRaining:HomeDistance were skipped as the main effects AlcoholY, Weather- Wet, and HomeDistance were significant, and SexM was the next predictor with a higher p-value. After removing Sex from the model, all the predictors in the model were significant except for WeatherRaining, PeakTimepm:HomeDistance, WeatherRaining:HomeDistance, but as discussed above, we could keep it in the model and finalize this model to be interpreted.
+
+The modelling was done in R environment using R Studio [11]. The significance level(p-value) was taken at $\alpha$ = 0.05 (5%).
+
+# 3 Results
+
+The variables, their descriptions, as well as their summaries are given in Table 1. For the continuous variables, the spread of the data could be observed from their standard deviations. From Table 1, Weather and Visibility show a perfect overlap in categories and counts, indicating multicollinearity. Hence, one of these predictors should be dropped when building either the base or an interaction model. Exploratory data analysis was conducted on the response variable Fatal against all the other predictors, as shown in Figures 1, 2, and 3. From Figure 1, it could be inferred that fatal accidents are rare. Both fatal and non-fatal accidents are more likely to occur in PeakTimepm than at PeakTimeam. City areas account for the highest number of accidents overall, including fatal ones. When trucks are involved, accidents are more likely to occur, though most are non-fatal. A similar pattern is observed for accidents involving buses.
+
+As shown in Figure 2, most accidents, both fatal and non-fatal, occur at traffic lights and stop signs. Male drivers account for a higher number of fatal and non-fatal accidents compared to female drivers. When the alcohol level of the driver is above the legal limit, accidents are more likely to occur, though the majority remain non-fatal. A similar trend is observed for accidents involving speeding drivers.
+
+From Figure 3, we could infer that most accidents, both fatal and non-fatal, occur in FineWeather compared to Wet and Raining Weather. GoodVisibility is associated with the highest number of accidents when compared with Moderate and Poor Visibility. From the boxplot of HomeDistance and Fatal, it could be inferred that both fatal and non-fatal accidents have a fairly similar median of around 20km, with fatal showing a slightly tighter spread than non-fatal accidents. Outliers for both fatal and non-fatal accidents are observed from 30 to over 50 km. From the boxplot of Age and Fatal, it could be inferred that fatal accidents tend to involve slightly older drivers on average, compared to non-fatal accidents, with outliers ranging from 70 to 90 years.
+
+Model M1 is the base model without interactions. It had an AIC of 3673.8 and a residual deviance of 3643.8. In the diagnostics for model M1, the Pearson residual vs fitted plot shows a clear curvature indicating poor fit. This indicates that M1 fails to capture important relationships between the response and predictor variables, likely due to missing key interactions or attributes. Hence, a model was then fitted with interactions.
+
+Model M2 includes interaction, and stepAIC was applied to reduce the model by removing insignificant terms. It had an AIC of 3643.5 and a residual deviance of 3601.5. The diagnostic for model M2 shows curvature, but less distinct than in  M1, with residuals more tightly clustered around zero. This suggests that M2 is a better fit. Overall, M2 has a lower AIC and residual deviance in comparison to M1 and hence is a better model between these two. However, to compare two models using the likelihood ratio test, the models must be nested. As M1 and M2 are not nested, likelihood ratio test is not applicable here.
+
+Model M3 is the interaction model after stepAIC, but has been further reduced to remove all insignificant terms from M2. The model had an AIC of 3641.2 and a residual deviance of 3611.2. The diagnostic for M3, as per Figure 4, indicates that the Pearson residual vs fitted plot has a similar curvature to M2, but the  residuals are less clustered around zero compared to M2. Although M3 has a slightly lower AIC than M2, its residual deviance is higher. To obtain a more definitive  result on whether M3 is better than M2, the likelihood ratio test was conducted. The test yielded chi-square value of 9.7165, df as 6, and p-value of 0.1371, which implies that the more complex model is not a significantly better fit than the simple model. Since M3 is a simpler reduced model, we could conclude that M3 is a better model in comparison to M2. Now, comparing all three models, we could conclude that M3 is the best model for this dataset.
+
+M3 contains seven main and interaction terms, indicating that it's relatively simple while still capturing the most important predictors for the model. The diagnostic plot for M3 depicts that it has a curvature and a slightly looser fit compared to M2. It has a lower AIC but a higher residual deviance than M2. Hence, to aid in making the decision on a better model, the likelihood ratio test was done between M2 and M3. The test yielded a p-value of 0.1371, which suggests that the simpler model, M3 is the better model. All these factors together indicate that M3 is the best model among the above models.
+
+The M3 model equation is:
+
+$$
+\begin{aligned}
+\text{logit}\big(P(\text{Fatal} = 1)\big) = \ & -4.989166 
++ 1.428270 \cdot \text{PeakTimepm} 
++ 2.718477 \cdot \text{BusY} 
++ 0.445236 \cdot \text{AlcoholY} \\
+&+ 0.366617 \cdot \text{WeatherRaining} 
++ 1.099672 \cdot \text{WeatherWet} 
++ 0.020483 \cdot \text{HomeDistance} 
++ 0.068050 \cdot \text{Age} \\
+&- 0.351991 \cdot (\text{PeakTimepm} \times \text{AlcoholY}) 
+- 0.024112 \cdot (\text{PeakTimepm} \times \text{Age}) \\
+&- 0.054320 \cdot (\text{BusY} \times \text{Age}) 
+- 0.146654 \cdot (\text{AlcoholY} \times \text{WeatherRaining}) \\
+&- 0.551906 \cdot (\text{AlcoholY} \times \text{WeatherWet}) 
+- 0.016510 \cdot (\text{WeatherRaining} \times \text{HomeDistance}) \\
+&- 0.028757 \cdot (\text{WeatherWet} \times \text{HomeDistance})
+\end{aligned} \tag{Equation (1)}
+$$
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{5cm}|p{8cm}|}
+\hline
+\textbf{Variable} & \textbf{Description} & \textbf{Summary} \\
+\hline
+PeakTime & Time the accident occurred & AM: 1248, PM: 1752 \\
+\hline
+Location & Location the accident occurred & City: 1485, OuterSuburban: 906, Suburban: 609 \\
+\hline
+Truck & Whether a truck was involved & No (N): 613, Yes (Y): 2387 \\
+\hline
+Bus & Whether a bus was involved & No (N): 277, Yes (Y): 2723 \\
+\hline
+LocationType & Location where the accident occurred & GiveWay: 149, Light: 1625, Stop: 1226 \\
+\hline
+Sex & Sex of the driver & Female (F): 1113, Male (M): 1887 \\
+\hline
+Alcohol & Whether the driver had an alcohol level above the legal limit & No (N): 1194, Yes (Y): 1806 \\
+\hline
+Speeding & Whether the driver was driving above the legal speed limit & No (N): 906, Yes (Y): 2094 \\
+\hline
+Weather & Weather conditions when the accident occurred & Fine: 1529, Raining: 584, Wet: 887 \\
+\hline
+Visibility & Visibility conditions when the accident occurred & Good: 1529, Moderate: 887, Poor: 584 \\
+\hline
+HomeDistance & Distance to the driver's house in (km) & Min: 6.446, Mean: 20.909, Median: 20.062, Max: 51.938, SD: 6.430312 \\
+\hline
+Age & Age of the driver who caused the accident in years & Min: 22.63, Mean: 45.80, Median: 44.69, Max: 88.19, SD: 9.360659 \\
+\hline
+Fatal & Whether the accident that occurred was fatal or not & Non-Fatal (0): 2103, Fatal (1): 897 \\
+\hline
+\end{tabular}
+\caption{Summary of all the variables}
+\label{tab:accident_summary}
+\end{table}
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(MASS)
+library(lmtest)
+library(gridExtra)
+
+#Loading the data
+accident <- read_table("Accident.txt")
+
+#Data Preprocessing and Cleaning
+accident <- accident[-1]
+names(accident) <- gsub('"', '', names(accident))
+accident$PeakTime <- gsub('"', '', accident$PeakTime)
+accident$Location <- gsub('"', '', accident$Location)
+accident$Truck <- gsub('"', '', accident$Truck)
+accident$Bus <- gsub('"', '', accident$Bus)
+accident$LocationType <- gsub('"', '', accident$LocationType)
+accident$Sex <- gsub('"', '', accident$Sex)
+accident$Alcohol <- gsub('"', '', accident$Alcohol)
+accident$Speeding <- gsub('"', '', accident$Speeding)
+accident$Weather <- gsub('"', '', accident$Weather)
+accident$Visibility <- gsub('"', '', accident$Visibility)
+
+#Factorization of required variables.
+accident$Location <- factor(accident$Location)
+accident$LocationType <- factor(accident$LocationType)
+accident$Weather <- factor(accident$Weather)
+accident$Visibility <- factor(accident$Visibility)
+
+accident$PeakTime <- factor(accident$PeakTime)
+accident$Truck <- factor(accident$Truck)
+accident$Bus <- factor(accident$Bus)
+accident$Sex <- factor(accident$Sex)
+accident$Alcohol <- factor(accident$Alcohol)
+accident$Speeding <- factor(accident$Speeding)
+
+accident$Fatal <- factor(accident$Fatal)
+
+P_F <- ggplot(accident, aes(x = PeakTime, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+L_F <- ggplot(accident, aes(x = Location, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+T_F <- ggplot(accident, aes(x = Truck, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+B_F <- ggplot(accident, aes(x = Bus, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+LT_F <- ggplot(accident, aes(x = LocationType, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+S_F <- ggplot(accident, aes(x = Sex, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+A_F <- ggplot(accident, aes(x = Alcohol, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+Sp_F <- ggplot(accident, aes(x = Speeding, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+W_F <- ggplot(accident, aes(x = Weather, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+V_F <- ggplot(accident, aes(x = Visibility, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+HD_F <- ggplot(data = accident, aes(x = HomeDistance, y = Fatal)) + geom_boxplot(color = "cyan")
+
+Ag_F <- ggplot(data = accident, aes(x = Age, y = Fatal)) + geom_boxplot(color = "cyan")
+
+```
+
+```{r, fig.cap="Explanatory plot of the response variable Fatal with the predictor variables PeakTime, Location, Truck, and Bus",echo=FALSE, warning=FALSE, message=FALSE, out.width="70%", fig.pos="H"}
+grid.arrange(P_F, L_F, T_F, B_F, ncol=2)
+```
+
+
+```{r, fig.cap="Explanatory plot of the response variable Fatal with the predictor variables LocationType, Sex, Alcohol, and Speeding", echo = FALSE, warning=FALSE, message=FALSE, out.width="70%", fig.pos="H"}
+grid.arrange(LT_F, S_F, A_F, Sp_F, ncol = 2)
+```
+
+```{r, fig.cap="Explanatory plot of the response variable Fatal with the predictor variables Weather, Visibility, HomeDistance, and Age", echo = FALSE, warning=FALSE, message=FALSE, out.width="70%", fig.pos="H"}
+grid.arrange(W_F, V_F, HD_F, Ag_F, ncol = 2)
+```
+
+```{r, fig.cap="Pearson Residual vs Fitted values plot for the M3 model", echo = FALSE, warning=FALSE, message=FALSE, out.width="70%", fig.pos="H"}
+fitted_model <- glm(Fatal ~ .^2, data = accident, family = "binomial")
+interaction_model <- stepAIC(fitted_model, trace = 0)
+final_interaction_model <- update(interaction_model, . ~ . - Location:Sex - Location - Sex - PeakTime:HomeDistance)
+
+accident_interaction_glm_final_residuals <- residuals(final_interaction_model, "pearson")
+plot(accident_interaction_glm_final_residuals ~ final_interaction_model$fitted.values, xlab = "Fitted values", ylab = "Pearson residuals",
+col = "blue")
+abline(h = 0)
+```
+
+# 4 Discussion
+
+Based on the model equation (1), only six main effects from the dataset are significant predictors of the response variable Fatal. Although the predictors WeatherRaining, AlcoholY:WeatherRaining, and WeatherRaining:HomeDistance are not significant, the main effect WeatherWet is significant and so are its interactions, so all the terms are included in the equation. The strongest predictors were BusY, PeakTimepm, WeatherWet, AlcoholY, WeatherRaining, HomeDistance, and Age, followed by the interaction terms. 
+
+Based on model equation (1), a few insights could be made while holding the other variables constant:
+
+1. The odds of a fatal accident occurring at PeakTimepm are 4.17 times higher than at PeakTimeam.
+
+2. The odds of an accident being fatal when a bus is involved are about 15.16 times higher than when a bus is not involved.
+
+3. The odds of an accident being fatal when the driver has an alcohol level above the legal limit are about 1.56 times higher than when the driver is not drunk.
+
+4. The odds of a fatal accident in WeatherRaining are about 1.44 times higher when compared to Fine Weather.
+
+5. The odds of a fatal accident in WeatherWet are about 3 times higher when compared to Fine Weather.
+
+6. For every 1 km increase in HomeDistance, the odds of a fatal accident are about 1.02 times higher.
+
+7. For every 1 year increase in Age, the odds of a fatal accident are about 1.07 times higher.
+
+8. When PeakTime is PM, and the driver is drunk, the odds of a fatal accident are about 0.70 times as high as when PeakTime is AM and the driver is sober.
+
+9. When PeakTime is PM, and age of the driver increases by 1 year, the odds of a fatal accident are about 0.98 times as high as when PeakTime is AM and the driver is younger.
+
+10. When a bus is involved, and the age of the driver increases by 1 year, the odds of a fatal accident are about 0.95 times as high as when no bus is involved and the driver's age is held constant.
+
+11. When the weather is rainy and the driver is drunk, the odds of a fatal accident are about 0.86 times as high as when the driver is sober and the weather is fine.
+
+12. When the weather is wet and the driver is drunk, the odds of a fatal accident are about 0.58 times as high as when the driver is sober and the weather is fine.
+
+13. For every 1 km increase in HomeDistance, under rainy weather, the odds of a fatal accident are about 0.98 times as high as under fine weather with the same HomeDistance .
+
+14. For every 1 km increase in HomeDistance, under wet weather, the odds of a fatal accident are about 0.97 times as high as under fine weather with the same HomeDistance.
+
+Here, according to the M3 model equation, the main effects have a strong increase in the odds of fatality, while the interaction terms are associated with lower odds of a fatal accident. This model is moderately complex, with seven main effects and seven interaction terms.
+
+Future works could focus on using a bigger dataset and additional predictors, such as vehicle type, vehicle safety ratings, and safety checks across different vehicle types to get a more detailed overview of the factors that contribute to increasing the odds of a fatal accident [6].
+
+# References
+
+[1]N. Acosta-González, S. Cahueñas, and C. Pérez, “Risk factors for fatal road traffic accidents in Ecuador,” Transportation Research Interdisciplinary Perspectives, vol. 32, p. 101515, Jul. 2025, doi: https://doi.org/10.1016/j.trip.2025.101515.
+
+[2]G. Zhang, K. K. W. Yau, and G. Chen, “Risk factors associated with traffic violations and accident severity in China,” Accident Analysis & Prevention, vol. 59, pp. 18–25, Oct. 2013, doi: https://doi.org/10.1016/j.aap.2013.05.004.
+
+[3]K. K. W. Yau, “Risk factors affecting the severity of single vehicle traffic accidents in Hong Kong,” Accident Analysis & Prevention, vol. 36, no. 3, pp. 333–340, May 2004, doi: https://doi.org/10.1016/s0001-4575(03)00012-5.
+
+[4]J. S. Yeung and Y. D. Wong, “Road traffic accidents in Singapore expressway tunnels,” Tunnelling and Underground Space Technology, vol. 38, pp. 534–541, Sep. 2013, doi: https://doi.org/10.1016/j.tust.2013.09.002.
+
+[5]Lluís Bermúdez and I. Morillo, “Assessing the effectiveness of road safety measures in Barcelona (2013-2018),” Heliyon, vol. 9, no. 12, pp. e23063–e23063, Dec. 2023, doi: https://doi.org/10.1016/j.heliyon.2023.e23063.
+
+[6]C. Shi and Y. Deng, “Analysis of factors influencing severity of urban expressway accidents in Guangdong province,” Jul. 2019, doi: https://doi.org/10.1109/ictis.2019.8883842.
+
+[7]M. Baryab, Muhammad Zunnurain Hussain, Muhammad Zulkifl Hasan, and A. Hasan, “Assessing the Impact of Drink and Driving on Fatalities in the United States using the Fatality Analysis Reporting System Database,” Apr. 2023, doi: https://doi.org/10.1109/i2ct57861.2023.10126319.
+
+[8]M. Asif, A. Kabir, and A. Huq, “An Explainable Machine Learning Approach to Traffic Accident Fatality Prediction,” Procedia Computer Science, vol. 246, pp. 1905–1914, Jan. 2024, doi: https://doi.org/10.1016/j.procs.2024.09.704.
+
+[9]J. Zhang, Z. Li, Z. Pu, and C. Xu, “Comparing Prediction Performance for Crash Injury Severity Among Various Machine Learning and Statistical Methods,” IEEE Access, vol. 6, pp. 60079–60087, 2018, doi: https://doi.org/10.1109/access.2018.2874979.
+
+[10]A. Iranitalab and A. Khattak, “Comparison of four statistical and machine learning methods for crash severity prediction,” Accident Analysis & Prevention, vol. 108, pp. 27–36, Nov. 2017, doi: https://doi.org/10.1016/j.aap.2017.08.008.
+
+[11]R Core Team. R: A Language and Environment for Statistical Computing. R Foundation for Statistical Computing, Vienna, Austria, 2023.
