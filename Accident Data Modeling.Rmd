@@ -1,0 +1,394 @@
+---
+title: "Accident Data Modeling"
+author: "Rohit"
+date: "2025-09-08"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(MASS)
+library(lmtest)
+library(gridExtra)
+getwd()
+accident <- read_table("Accident.txt")
+```
+
+```{r}
+#Data Preprocessing and Cleaning
+accident <- accident[-1]
+summary(accident)
+names(accident) <- gsub('"', '', names(accident))
+accident$PeakTime <- gsub('"', '', accident$PeakTime)
+accident$Location <- gsub('"', '', accident$Location)
+accident$Truck <- gsub('"', '', accident$Truck)
+accident$Bus <- gsub('"', '', accident$Bus)
+accident$LocationType <- gsub('"', '', accident$LocationType)
+accident$Sex <- gsub('"', '', accident$Sex)
+accident$Alcohol <- gsub('"', '', accident$Alcohol)
+accident$Speeding <- gsub('"', '', accident$Speeding)
+accident$Weather <- gsub('"', '', accident$Weather)
+accident$Visibility <- gsub('"', '', accident$Visibility)
+```
+
+```{r}
+#Factorization of required variables.
+accident$Location <- factor(accident$Location)
+accident$LocationType <- factor(accident$LocationType)
+accident$Weather <- factor(accident$Weather)
+accident$Visibility <- factor(accident$Visibility)
+
+accident$PeakTime <- factor(accident$PeakTime)
+accident$Truck <- factor(accident$Truck)
+accident$Bus <- factor(accident$Bus)
+accident$Sex <- factor(accident$Sex)
+accident$Alcohol <- factor(accident$Alcohol)
+accident$Speeding <- factor(accident$Speeding)
+
+accident$Fatal <- factor(accident$Fatal)
+
+str(accident)
+summary(accident)
+sd(accident$HomeDistance)
+sd(accident$Age)
+```
+```{r}
+names(accident)
+```
+```{r}
+grid.arrange(P_F, L_F, T_F, B_F, ncol=2)
+grid.arrange(LT_F, S_F, A_F, Sp_F, ncol = 2)
+grid.arrange(W_F, V_F, HD_F, Ag_F, ncol = 2)
+
+L_F
+```
+
+```{r}
+P_F <- ggplot(accident, aes(x = PeakTime, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_L <- table(x = accident$PeakTime, y = accident$Location, dnn = c("PeakTime", "Location"))
+P_L
+```
+
+```{r}
+L_F <- ggplot(accident, aes(x = Location, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_T <- table(x = accident$PeakTime, y = accident$Truck, dnn = c("PeakTime", "Truck"))
+P_T
+```
+
+```{r}
+T_F <- ggplot(accident, aes(x = Truck, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+B_F <- ggplot(accident, aes(x = Bus, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_B <- table(x = accident$PeakTime, y = accident$Bus, dnn = c("PeakTime", "Bus"))
+P_B
+```
+
+```{r}
+LT_F <- ggplot(accident, aes(x = LocationType, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_LT <- table(x = accident$PeakTime, y = accident$LocationType, dnn = c("PeakTime", "LocationType"))
+P_LT
+```
+
+```{r}
+S_F <- ggplot(accident, aes(x = Sex, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_S <- table(x = accident$PeakTime, y = accident$Sex, dnn = c("PeakTime", "Sex"))
+P_S
+```
+
+```{r}
+A_F <- ggplot(accident, aes(x = Alcohol, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_A <- table(x = accident$PeakTime, y = accident$Alcohol, dnn = c("PeakTime", "Alcohol"))
+P_A
+```
+
+```{r}
+Sp_F <- ggplot(accident, aes(x = Speeding, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_Sp <- table(x = accident$PeakTime, y = accident$Speeding, dnn = c("PeakTime", "Speeding"))
+P_Sp
+```
+
+```{r}
+W_F <- ggplot(accident, aes(x = Weather, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_W <- table(x = accident$PeakTime, y = accident$Weather, dnn = c("PeakTime", "Weather"))
+P_W
+```
+
+```{r}
+V_F <- ggplot(accident, aes(x = Visibility, y = Fatal)) +
+  geom_count(colour = "cyan") +
+  labs(size = "Count")
+
+P_V <- table(x = accident$PeakTime, y = accident$Visibility, dnn = c("PeakTime", "Visibility"))
+P_V
+```
+
+```{r}
+HD_F <- ggplot(data = accident, aes(x = HomeDistance, y = Fatal)) + geom_boxplot(color = "cyan")
+
+Ag_F <- ggplot(data = accident, aes(x = Age, y = Fatal)) + geom_boxplot(color = "cyan")
+
+P_HD <- ggplot(data = accident, aes(x = PeakTime, y = HomeDistance)) + geom_boxplot(color = "cyan")
+P_HD
+```
+
+```{r}
+A_F <- ggplot(data = accident, aes(x = Age, y = Fatal)) + geom_boxplot(color = "cyan")
+
+P_Age <- ggplot(data = accident, aes(x = PeakTime, y = Age)) + geom_boxplot(color = "cyan")
+P_Age
+```
+
+```{r}
+P_F <- table(x = accident$PeakTime, y = accident$Fatal, dnn = c("PeakTime", "Fatal"))
+P_F
+```
+
+```{r}
+L_T <- table(x = accident$Location, y = accident$Truck, dnn = c("Location", "Truck"))
+L_T
+```
+```{r}
+L_B <- table(x = accident$Location, y = accident$Bus, dnn = c("Location", "Bus"))
+L_B
+```
+
+```{r}
+L_LT <- table(x = accident$Location, y = accident$LocationType, dnn = c("Location", "Location Type"))
+L_LT
+```
+
+```{r}
+L_S <- table(x = accident$Location, y = accident$Sex, dnn = c("Location", "Sex"))
+L_S
+```
+
+```{r}
+L_A <- table(x = accident$Location, y = accident$Alcohol, dnn = c("Location", "Alcohol"))
+L_A
+```
+
+```{r}
+L_Sp <- table(x = accident$Location, y = accident$Speeding, dnn = c("Location", "Speeding"))
+L_Sp
+```
+
+```{r}
+L_W <- table(x = accident$Location, y = accident$Weather, dnn = c("Location", "Weather"))
+L_W
+```
+
+```{r}
+L_V <- table(x = accident$Visibility, y = accident$Truck, dnn = c("Location", "Visibility"))
+L_V
+```
+
+```{r}
+L_HD <- ggplot(data = accident, aes(x = Location, y = HomeDistance)) + geom_boxplot(color = "cyan")
+L_HD
+```
+
+```{r}
+L_Ag <- ggplot(data = accident, aes(x = Location, y = Age)) + geom_boxplot(color = "cyan")
+L_Ag
+```
+
+```{r}
+with(accident, plot(Age, Speeding, ylab = "Speeding", col = Fatal + 1, pch = Fatal))
+legend("topright", col = c(1, 2), pch = c(0, 1), legend = c("Male", "Female"))
+```
+
+```{r}
+with(accident, plot(Age, Fatal, ylab = "Fatal", col = as.numeric(Speeding) + 1, pch = as.numeric(Speeding)))
+legend("topright", col = c(1, 2), pch = c(0, 1), legend = c("Male", "Female"))
+```
+
+```{r}
+accident_glm_final <- glm(Fatal ~ . - Visibility, data = accident, family = "binomial")
+summary(accident_glm_final)
+```
+
+```{r}
+accident_glm_final_residuals <- residuals(accident_glm_final, "deviance")
+plot(accident_glm_final_residuals ~ accident_glm_final$fitted.values, xlab = "Fitted values", ylab = "Pearson residuals",
+col = "blue")
+abline(h = 0)
+```
+
+```{r}
+hist(accident_glm_final_residuals, main = "Histogram of residuals")
+box()
+```
+
+```{r}
+time.grid <- seq(0, 1, by = 0.01)   # am=0 to pm=1
+b0 <- coef(accident_glm_final)[[1]]
+b1 <- coef(accident_glm_final)[[2]]
+b2 <- coef(accident_glm_final)[[3]]
+b3 <- coef(accident_glm_final)[[4]]
+
+logit <- function(x) exp(x) / (1 + exp(x))
+
+# Clear (baseline)
+pi.clear <- logit(b0 + b1 * time.grid)
+
+# Raining
+pi.rain  <- logit(b0 + b1 * time.grid + b2)
+
+# Wet
+pi.wet   <- logit(b0 + b1 * time.grid + b3)
+
+cols <- c("black", "blue", "red")   # Clear, Raining, Wet
+with(accident, plot(jitter(as.numeric(PeakTime)), Fatal,
+                    xlab = "PeakTime (0 = am, 1 = pm)",
+                    ylab = expression(pi),
+                    col = cols[Weather],
+                    pch = as.numeric(Weather)))
+
+legend("topright",
+       col = cols,
+       lty = 1, lwd = 2,
+       legend = levels(accident$Weather),
+       title = "Weather")
+
+```
+
+```{r}
+exp(accident_glm_final$coefficients)
+exp(coef(accident_glm_final)[[2]])
+exp(coef(accident_glm_final)[[3]])
+exp(coef(accident_glm_final)[[4]])
+```
+
+```{r}
+fitted_model <- glm(Fatal ~ .^2, data = accident, family = "binomial")
+interaction_model <- stepAIC(fitted_model, trace = 0)
+summary(interaction_model)
+```
+
+```{r}
+removing_interactions_1 <- update(interaction_model, . ~ . - Location:Sex)
+summary(removing_interactions_1)
+
+removing_interactions_2 <- update(interaction_model, . ~ . - Location:Sex - Location)
+summary(removing_interactions_2)
+
+removing_interactions_3 <- update(interaction_model, . ~ . - Location:Sex - Location - Sex)
+summary(removing_interactions_3)
+
+final_interaction_model <- update(interaction_model, . ~ . - Location:Sex - Location - Sex - PeakTime:HomeDistance)
+summary(final_interaction_model)
+```
+
+```{r}
+#Chi-square Test
+# Difference in deviance
+value <- interaction_model$deviance - final_interaction_model$deviance  
+
+# Difference in degrees of freedom
+df_value <- interaction_model$df.residual - final_interaction_model$df.residual  
+
+# Chi-square test p-value
+p_value <- 1 - pchisq(value, -df_value)
+p_value
+```
+
+```{r}
+anova(interaction_model, final_interaction_model, test = "Chisq")
+```
+
+```{r}
+lrtest(final_interaction_model, interaction_model)
+```
+
+```{r}
+accident_interaction_glm_final_residuals <- residuals(final_interaction_model, "pearson")
+plot(accident_interaction_glm_final_residuals ~ final_interaction_model$fitted.values, xlab = "Fitted values", ylab = "Pearson residuals",
+col = "blue")
+abline(h = 0)
+
+accident_interaction_glm_final_residuals <- residuals(interaction_model, "pearson")
+plot(accident_interaction_glm_final_residuals ~ interaction_model$fitted.values, xlab = "Fitted values", ylab = "Pearson residuals",
+col = "blue")
+abline(h = 0)
+
+accident_interaction_glm_final_residuals <- residuals(accident_glm_final, "pearson")
+plot(accident_interaction_glm_final_residuals ~ accident_glm_final$fitted.values, xlab = "Fitted values", ylab = "Pearson residuals",
+col = "blue")
+abline(h = 0)
+```
+
+
+
+```{r}
+hist(accident_interaction_glm_final_residuals, main = "Histogram of residuals")
+box()
+```
+
+
+```{r}
+exp(removing_interactions_3$coefficients)
+exp(coef(removing_interactions_3)[[2]])
+exp(coef(removing_interactions_3)[[3]])
+exp(coef(removing_interactions_3)[[4]])
+```
+
+
+
+```{r}
+accident_glm_novis <- glm(Fatal ~ PeakTime + Location + Truck + Bus + LocationType + Sex + Alcohol + Speeding + Weather + HomeDistance + Age , data = accident, family = "binomial")
+summary(accident_glm_novis)
+```
+
+
+```{r}
+fitted_model_novis <- glm(Fatal ~ (PeakTime + Location + Truck + Bus + LocationType + Sex + Alcohol + Speeding + Weather + HomeDistance + Age) ^2, data = accident, family = "binomial")
+interaction_model_novis <- stepAIC(fitted_model_novis, trace = 1)
+summary(interaction_model_novis)
+```
+
+```{r}
+fitted_model_nowea <- glm(Fatal ~ PeakTime + Location + Truck + Bus + LocationType + Sex + Alcohol + Speeding + Visibility + HomeDistance + Age, data = accident, family = "binomial")
+summary(fitted_model_nowea)
+```
+
+```{r}
+fitted_model_nowea <- glm(Fatal ~ (PeakTime + Location + Truck + Bus + LocationType + Sex + Alcohol + Speeding + Visibility + HomeDistance + Age) ^2, data = accident, family = "binomial")
+interaction_model_novis <- stepAIC(fitted_model_nowea, trace = 1)
+summary(interaction_model_novis)
+```
+
+
+
+
+
